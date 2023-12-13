@@ -13,6 +13,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class OptionDto {
+private int id;
 private String name;
 private Boolean isAns;
 }

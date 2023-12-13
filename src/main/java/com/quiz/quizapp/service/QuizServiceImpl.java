@@ -18,7 +18,10 @@ public class QuizServiceImpl implements IQuizService {
 	@Override
 	public Quiz getQuizById(int id) {
 		Optional<Quiz> result = quizRepo.findById(id);
-		return result.get();
+		if(result.isPresent()) {
+			return result.get();
+		}
+		return null;
 	}
 
 	@Override

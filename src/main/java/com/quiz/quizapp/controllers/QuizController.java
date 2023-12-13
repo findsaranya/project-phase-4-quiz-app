@@ -40,51 +40,54 @@ public class QuizController {
 	public ResponseEntity<QuizDto> getQuiz(@PathVariable int quizId){
 		Quiz quiz = quizService.getQuizById(quizId);
 		QuizDto result = new QuizDto();
-		result.setQuizId(quiz.getQuizId());
-		result.setQuizName(quiz.getQname());
-		List<QuestionDto> newQueList = quiz.getQuestions().stream().map(x -> {
-			QuestionDto newQues = new QuestionDto();
-			newQues.setQuestId(x.getQuesId());
-			newQues.setQuesName(x.getQuesname());
-		List<OptionDto> newOptList = x.getOptions().stream().map(y -> {
-				OptionDto newOpt = new  OptionDto();
-				newOpt.setName(y.getOptionName());
-				newOpt.setIsAns(y.getIsAnswerable());
-				return newOpt;
+		if(quiz != null) {	
+			result.setQuizId(quiz.getQuizId());
+			result.setQuizName(quiz.getQname());
+			List<QuestionDto> newQueList = quiz.getQuestions().stream().map(x -> {
+				QuestionDto newQues = new QuestionDto();
+				newQues.setQuestId(x.getQuesId());
+				newQues.setQuesName(x.getQuesname());
+			List<OptionDto> newOptList = x.getOptions().stream().map(y -> {
+					OptionDto newOpt = new  OptionDto();
+					newOpt.setId(y.getOptionId());
+					newOpt.setName(y.getOptionName());
+					newOpt.setIsAns(y.getIsAnswerable());
+					return newOpt;
+				}).collect(Collectors.toList());
+			newQues.setOptions(newOptList);
+			return newQues;
 			}).collect(Collectors.toList());
-		newQues.setOptions(newOptList);
-		return newQues;
-		}).collect(Collectors.toList());
-		result.setQuestions(newQueList);
-		System.out.println(result);
+			result.setQuestions(newQueList);
+		}
 		return ResponseEntity.ok(result);
 	}
 	
 	@GetMapping(value="/getAllQuiz")
-	public ResponseEntity<String> getAllQuiz(){
+	public ResponseEntity<List<QuizDto>> getAllQuiz(){
 		List<Quiz> quiz = quizService.getAllQuiz();
-		System.out.println(quiz);
-//	    List<QuizDto> quizList = quiz.stream().map(x -> new QuizDto(x.getQuizId(),x.getQname())).toList();
-		return ResponseEntity.ok("all");
+	    List<QuizDto> quizList = quiz.stream().map(qz -> 
+	    {
+	      QuizDto newQuiz = new QuizDto(qz.getQuizId(),qz.getQname());
+	      return newQuiz;
+	    }).toList();
+	    
+		return ResponseEntity.ok(quizList);
 	}
 	
 	@PostMapping(value="/create")
 	public ResponseEntity<String> createQuiz(@RequestBody QuizDto quiz){
-	System.out.println(quiz);
-		//Quiz quizResult = quizService.createQuiz(quiz);
-	//QuizDto quizDto = new QuizDto(quizResult.getQuizId(),quizResult.getQname(),quizResult.getQuestions());
-	//System.out.println(quizDto);
 	Quiz quizNew = new Quiz();
 	
 	List<Option> optionList = new ArrayList<Option>();
 	List<Question> quesList = new ArrayList<Question>();
 	quiz.getQuestions().stream().map(x -> {
 		Question quesNew = new Question();
-		
+		quesNew.setQuesId(x.getQuestId());
 		quesNew.setQuiz(quizNew);
 		quesNew.setQuesname(x.getQuesName());
 		List<Option> optList = x.getOptions().stream().map(y -> {
 			Option optionNew = new Option();
+			optionNew.setOptionId(y.getId());
 			optionNew.setOptionName(y.getName());
 			optionNew.setIsAnswerable(y.getIsAns());
 			optionNew.setQues(quesNew);

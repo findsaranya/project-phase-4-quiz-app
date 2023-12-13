@@ -15,7 +15,6 @@ import lombok.ToString;
 @ToString
 public class QuestionDto {
 private int questId;
-
 private String quesName;
 private List<OptionDto> options;
 }
