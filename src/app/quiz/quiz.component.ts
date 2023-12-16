@@ -44,7 +44,6 @@ export default class QuizComponent implements OnInit {
   };
   timer = 0;
   startTime = new Date();
-  endTime =  Date();
   ellapsedTime = '00:00';
   duration = '';
   
@@ -60,6 +59,7 @@ export default class QuizComponent implements OnInit {
      quizId ?  this.quizService.getQuizById(quizId) : of(null))).subscribe({
       next : (quesList) => {
         if(quesList){
+        if(this.timer) clearInterval(this.timer);
         this.quizName= quesList?.quizName || '';
         this.questions = this.userAnsweredQuestions = quesList?.questions || []
         this.pager.count = quesList?.questions?.length || 0;
@@ -114,6 +114,7 @@ export default class QuizComponent implements OnInit {
   }
 
   goTo(index: number):void {
+    console.log("goto")
     if (index >= 0 && index < this.pager.count) {
       this.pager.index = index;
       this.mode = 'quiz';
